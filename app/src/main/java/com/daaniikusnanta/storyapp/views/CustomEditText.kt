@@ -7,6 +7,7 @@ import android.text.InputType
 import android.text.TextWatcher
 import android.util.AttributeSet
 import androidx.appcompat.widget.AppCompatEditText
+import com.daaniikusnanta.storyapp.R
 
 class CustomEditText : AppCompatEditText {
     private var invalidInputMsg: String = "default"
@@ -33,9 +34,9 @@ class CustomEditText : AppCompatEditText {
         type = inputType - 1
 
         invalidInputMsg = when (type) {
-            InputType.TYPE_TEXT_VARIATION_PASSWORD -> "Password must be at least 6 characters"
-            InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS -> "Invalid email"
-            else -> "Invalid input"
+            InputType.TYPE_TEXT_VARIATION_PASSWORD -> this.context.getString(R.string.invalid_password)
+            InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS -> this.context.getString(R.string.invalid_email)
+            else -> this.context.getString(R.string.invalid_input)
         }
 
         addTextChangedListener(object : TextWatcher {

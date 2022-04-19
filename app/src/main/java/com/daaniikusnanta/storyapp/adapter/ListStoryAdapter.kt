@@ -1,5 +1,6 @@
 package com.daaniikusnanta.storyapp.adapter
 
+import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -9,8 +10,9 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.daaniikusnanta.storyapp.R
 import com.daaniikusnanta.storyapp.api.ListStoryItem
+import com.daaniikusnanta.storyapp.misc.getElapsedTimeString
 
-class ListStoryAdapter(private val listStory: List<ListStoryItem>) : RecyclerView.Adapter<ListStoryAdapter.ListViewHolder>() {
+class ListStoryAdapter(private val listStory: List<ListStoryItem>, private val context: Context) : RecyclerView.Adapter<ListStoryAdapter.ListViewHolder>() {
 
     private lateinit var onItemClickCallback: OnItemClickCallback
 
@@ -30,10 +32,10 @@ class ListStoryAdapter(private val listStory: List<ListStoryItem>) : RecyclerVie
                 .load(photoUrl)
                 .into(holder.imgStory)
             holder.tvUsername.text = name
-            holder.tvTime.text = createdAt
+            holder.tvTime.text = createdAt?.let { getElapsedTimeString(it, context) }
         }
 
-        holder.itemView.setOnClickListener { onItemClickCallback.onItemClicked(listStory[holder.adapterPosition]) }
+        holder.itemView.setOnClickListener { onItemClickCallback.onItemClicked(listStory[holder.adapterPosition], holder) }
     }
 
     override fun getItemCount(): Int = listStory.size
@@ -45,6 +47,6 @@ class ListStoryAdapter(private val listStory: List<ListStoryItem>) : RecyclerVie
     }
 
     interface OnItemClickCallback {
-        fun onItemClicked(data: ListStoryItem)
+        fun onItemClicked(data: ListStoryItem, holder: ListViewHolder)
     }
 }

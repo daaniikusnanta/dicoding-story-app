@@ -1,5 +1,7 @@
 package com.daaniikusnanta.storyapp.api
 
+import okhttp3.MultipartBody
+import okhttp3.RequestBody
 import retrofit2.Call
 import retrofit2.http.*
 
@@ -19,10 +21,11 @@ interface ApiService {
         @Field ("password") password: String,
     ): Call<LoginResponse>
 
-    @FormUrlEncoded
+    @Multipart
     @POST("stories")
     fun addStory(
-        @Path("login") id: String,
+        @Part file: MultipartBody.Part,
+        @Part("description") description: RequestBody,
         @Header("Authorization") token: String,
     ): Call<ApiResponse>
 

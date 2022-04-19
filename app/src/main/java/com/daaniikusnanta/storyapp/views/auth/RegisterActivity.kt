@@ -24,30 +24,30 @@ class RegisterActivity : AppCompatActivity(), View.OnClickListener {
         registerViewModel.apply {
             isLoading.observe(this@RegisterActivity) {
                 binding.btnRegister.isEnabled = it != true
+                binding.btnRegister.text = if (it == true) getString(R.string.registering) else getString(R.string.register)
             }
             isSuccess.observe(this@RegisterActivity) {
                 if (it == true) {
-                    Toast.makeText(this@RegisterActivity, "Register Success", Toast.LENGTH_SHORT).show()
-                    startActivity(Intent(this@RegisterActivity, LoginActivity::class.java))
+                    Toast.makeText(this@RegisterActivity, getString(R.string.register_success), Toast.LENGTH_SHORT).show()
                     finish()
                 }
             }
             errorMessage.observe(this@RegisterActivity) {
-                Toast.makeText(this@RegisterActivity, it, Toast.LENGTH_SHORT).show()
+                Toast.makeText(this@RegisterActivity, getString(R.string.register_failed), Toast.LENGTH_SHORT).show()
             }
         }
     }
 
     override fun onClick(v: View?) {
         when (v?.id) {
-            R.id.btn_register -> {
+            binding.btnRegister.id -> {
                 registerViewModel.register(
                     binding.edtName.text.toString(),
                     binding.edtEmail.text.toString(),
                     binding.edtPassword.text.toString(),
                 )
             }
-            R.id.tv_login_button -> {
+            binding.tvLoginButton.id -> {
                 val moveToLogin = Intent(this@RegisterActivity, LoginActivity::class.java)
                 startActivity(moveToLogin)
             }

@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context=".views.main.SettingsActivity">
+
+    <TextView
+        android:id="@+id/btn_change_language"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingHorizontal="8dp"
+        android:paddingVertical="16dp"
+        android:textSize="24sp"
+        android:clickable="true"
+        android:text="@string/change_language"
+        style="@style/TextAppearance.AppCompat"
+        android:focusable="true"
+        android:drawablePadding="8dp"
+        app:drawableStartCompat="@drawable/ic_baseline_language_24"
+        app:drawableTint="@color/black" />
+
+    <com.google.android.material.divider.MaterialDivider
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"/>
+
+    <com.google.android.material.switchmaterial.SwitchMaterial
+        android:id="@+id/btn_dark_mode"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:checked="false"
+        android:paddingHorizontal="8dp"
+        app:useMaterialThemeColors="true"
+        android:paddingVertical="16dp"
+        android:textSize="24sp"
+        android:clickable="true"
+        android:text="@string/dark_mode"
+        style="@style/TextAppearance.AppCompat"
+        android:focusable="true"
+        android:drawablePadding="8dp"
+        app:drawableStartCompat="@drawable/ic_baseline_dark_mode_24"
+        app:drawableTint="@color/black" />
+
+    <com.google.android.material.divider.MaterialDivider
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"/>
+
+    <TextView
+        android:id="@+id/btn_logout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingHorizontal="8dp"
+        android:paddingVertical="16dp"
+        android:textSize="24sp"
+        android:clickable="true"
+        android:text="@string/log_out"
+        android:textColor="@color/design_default_color_error"
+        android:focusable="true"
+        android:drawablePadding="8dp"
+        app:drawableStartCompat="@drawable/ic_baseline_logout_24"
+        app:drawableTint="@color/design_default_color_error" />
+
+    <com.google.android.material.divider.MaterialDivider
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"/>
+
+</LinearLayout>

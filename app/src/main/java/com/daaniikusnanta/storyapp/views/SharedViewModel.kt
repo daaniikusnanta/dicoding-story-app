@@ -5,6 +5,10 @@ import com.daaniikusnanta.storyapp.data.SettingPreferences
 import kotlinx.coroutines.launch
 
 class SharedViewModel(private val pref: SettingPreferences) : ViewModel() {
+    init {
+        getThemeSettings()
+    }
+
     fun getToken(): LiveData<String> {
         return pref.getTokenSetting().asLiveData()
     }
@@ -12,6 +16,16 @@ class SharedViewModel(private val pref: SettingPreferences) : ViewModel() {
     fun saveToken(token: String) {
         viewModelScope.launch {
             pref.saveTokenSetting(token)
+        }
+    }
+
+    fun getThemeSettings(): LiveData<Boolean> {
+        return pref.getThemeSetting().asLiveData()
+    }
+
+    fun saveThemeSetting(isDarkModeActive: Boolean) {
+        viewModelScope.launch {
+            pref.saveThemeSetting(isDarkModeActive)
         }
     }
 
