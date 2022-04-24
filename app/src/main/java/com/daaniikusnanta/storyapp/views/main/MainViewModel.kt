@@ -21,12 +21,13 @@ class MainViewModel() : ViewModel() {
 
     var token = ""
 
-    fun getStories(authToken: String) {
+    fun getStories(authToken: String, isLocation: Boolean = false) {
         _isLoading.value = true
         val auth = "Bearer $authToken"
 
         val client = ApiConfig.getApiService().getStories(
-            auth
+            auth,
+            if (isLocation) 1 else 0,
         )
         client.enqueue(object : Callback<StoryResponse> {
             override fun onResponse(

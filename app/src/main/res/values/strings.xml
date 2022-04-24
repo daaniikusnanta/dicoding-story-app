@@ -77,4 +77,7 @@
     <string name="week">week</string>
     <string name="weeks">weeks</string>
     <string name="refresh">Refresh</string>
+    <string name="title_activity_maps" translatable="false">MapsActivity</string>
+    <string name="map_id_light" translatable="false">7cad28883dc70418</string>
+    <string name="map_id_dark">dfd9ada7429ce95b</string>
 </resources>

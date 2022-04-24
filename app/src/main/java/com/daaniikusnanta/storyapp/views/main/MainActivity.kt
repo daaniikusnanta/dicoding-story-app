@@ -128,6 +128,11 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
                 mainViewModel.getStories(mainViewModel.token)
                 true
             }
+            R.id.menu_maps -> {
+                val moveToMaps = Intent(this, MapsActivity::class.java)
+                startActivity(moveToMaps)
+                true
+            }
             else -> super.onOptionsItemSelected(item)
         }
     }
