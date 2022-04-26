@@ -25,15 +25,16 @@ internal class StackRemoteViewsFactory(private val context: Context) : RemoteVie
         val pref = SettingPreferences.getInstance(context.dataStore)
         CoroutineScope(Dispatchers.Main).launch {
             pref.getTokenSetting().collect { token = "Bearer $it" }
+
+            val listStory = ApiConfig.getApiService()
+                .getStories(token)
+                .listStory
+
+            stories.clear()
+            stories.addAll(listStory)
         }
 
-        val listStory = ApiConfig.getApiService()
-            .getStories(token)
-            .execute()
-            .body()
-            ?.listStory as List<ListStoryItem>
-        stories.clear()
-        stories.addAll(listStory)
+
     }
 
     override fun onCreate() {

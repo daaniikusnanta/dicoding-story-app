@@ -6,13 +6,16 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.paging.PagingDataAdapter
+import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.daaniikusnanta.storyapp.R
 import com.daaniikusnanta.storyapp.api.ListStoryItem
+import com.daaniikusnanta.storyapp.databinding.ItemStoryBinding
 import com.daaniikusnanta.storyapp.misc.getElapsedTimeString
 
-class ListStoryAdapter(private val listStory: List<ListStoryItem>, private val context: Context) : RecyclerView.Adapter<ListStoryAdapter.ListViewHolder>() {
+class ListStoryAdapter(private val context: Context) : PagingDataAdapter<ListStoryItem, ListStoryAdapter.ListViewHolder>(DIFF_CALLBACK) {
 
     private lateinit var onItemClickCallback: OnItemClickCallback
 
@@ -21,32 +24,48 @@ class ListStoryAdapter(private val listStory: List<ListStoryItem>, private val c
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ListViewHolder {
-        val view: View = LayoutInflater.from(parent.context).inflate(R.layout.item_story, parent, false)
-        return ListViewHolder(view)
+        val binding = ItemStoryBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+        return ListViewHolder(binding)
     }
 
     override fun onBindViewHolder(holder: ListViewHolder, position: Int) {
-        val story = listStory[position]
-        with(story) {
-            Glide.with(holder.itemView.context)
-                .load(photoUrl)
-                .into(holder.imgStory)
-            holder.tvUsername.text = name
-            holder.tvTime.text = createdAt?.let { getElapsedTimeString(it, context) }
+        val story = getItem(position)
+        if (story != null) {
+            holder.bind(story, onItemClickCallback)
         }
 
-        holder.itemView.setOnClickListener { onItemClickCallback.onItemClicked(listStory[holder.adapterPosition], holder) }
+
     }
 
-    override fun getItemCount(): Int = listStory.size
+    class ListViewHolder(private val binding: ItemStoryBinding) : RecyclerView.ViewHolder(binding.root) {
+        fun bind(story: ListStoryItem, onItemClickCallback: OnItemClickCallback) {
+            with(story) {
+                Glide.with(binding.root.context)
+                    .load(photoUrl)
+                    .into(binding.imgStory)
+                binding.tvUsername.text = name
+                binding.tvTime.text = getElapsedTimeString(createdAt, binding.root.context)
 
-    class ListViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        var imgStory: ImageView = itemView.findViewById(R.id.img_story)
-        var tvUsername: TextView = itemView.findViewById(R.id.tv_username)
-        var tvTime: TextView = itemView.findViewById(R.id.tv_time)
+                binding.storyCard.setOnClickListener { onItemClickCallback.onItemClicked(story, binding) }
+            }
+        }
     }
 
     interface OnItemClickCallback {
-        fun onItemClicked(data: ListStoryItem, holder: ListViewHolder)
+        fun onItemClicked(data: ListStoryItem?, binding: ItemStoryBinding)
+    }
+
+    companion object {
+        private val DIFF_CALLBACK = object : DiffUtil.ItemCallback<ListStoryItem>() {
+            override fun areItemsTheSame(oldItem: ListStoryItem, newItem: ListStoryItem): Boolean {
+                return oldItem == newItem
+            }
+
+            override fun areContentsTheSame(oldItem: ListStoryItem, newItem: ListStoryItem): Boolean {
+                return oldItem.id == newItem.id
+            }
+        }
+
+
     }
 }

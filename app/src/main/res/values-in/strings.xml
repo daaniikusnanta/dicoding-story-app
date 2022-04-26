@@ -67,4 +67,5 @@
     <string name="week">minggu</string>
     <string name="weeks">minggu</string>
     <string name="refresh">Perbarui</string>
+    <string name="info_window_click_message">Sentuh untuk melihat lebih...</string>
 </resources>

@@ -7,10 +7,12 @@ import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
+import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.app.ActivityOptionsCompat
 import androidx.core.util.Pair
+import androidx.paging.PagingData
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.daaniikusnanta.storyapp.R
@@ -18,6 +20,7 @@ import com.daaniikusnanta.storyapp.adapter.ListStoryAdapter
 import com.daaniikusnanta.storyapp.api.ListStoryItem
 import com.daaniikusnanta.storyapp.data.SettingPreferences
 import com.daaniikusnanta.storyapp.databinding.ActivityMainBinding
+import com.daaniikusnanta.storyapp.databinding.ItemStoryBinding
 import com.daaniikusnanta.storyapp.views.SharedViewModel
 import com.daaniikusnanta.storyapp.views.auth.LoginActivity
 import com.daaniikusnanta.storyapp.views.dataStore
@@ -26,7 +29,10 @@ import com.google.android.material.snackbar.Snackbar
 
 class MainActivity : AppCompatActivity(), View.OnClickListener {
     private lateinit var binding: ActivityMainBinding
-    private val mainViewModel by viewModels<MainViewModel>()
+    private var token : String = ""
+    private val mainViewModel by viewModels<MainViewModel> {
+        MainViewModel.ViewModelFactory(this)
+    }
     private val sharedViewModel by viewModels<SharedViewModel> {
         SharedViewModel.Factory(
             SettingPreferences.getInstance(dataStore)
@@ -51,11 +57,6 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
                 binding.rvStories.visibility = if (it) View.GONE else View.VISIBLE
             }
 
-            listStories.observe(this@MainActivity) {
-                if(it.isNotEmpty()) {
-                    setStories(it)
-                }
-            }
             errorMessage.observe(this@MainActivity) {
                 if (it != null) {
                     Snackbar.make(binding.coordinatorLayout, getString(R.string.fetch_stories_failed), Snackbar.LENGTH_LONG)
@@ -79,30 +80,44 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
     override fun onResume() {
         super.onResume()
 
-        sharedViewModel.getToken().observe(this) {
-            mainViewModel.token = it
-            if (it.isEmpty()) {
+        getStoryData()
+    }
+
+    private fun getStoryData() {
+        sharedViewModel.getToken().observe(this) { token ->
+            mainViewModel.token = token
+            if (token.isEmpty()) {
                 val moveToLogin = Intent(this, LoginActivity::class.java)
                 startActivity(moveToLogin)
                 finish()
             } else {
-                mainViewModel.getStories(it)
+                this.token = token
+                mainViewModel.getStories(token).observe(this) {
+                    if (it == null) {
+                        Snackbar.make(binding.coordinatorLayout, getString(R.string.fetch_stories_failed), Snackbar.LENGTH_LONG)
+                            .setAction(R.string.retry.toString()) { onResume() }
+                            .show()
+                    } else {
+                        setStories(it)
+                    }
+                }
             }
         }
     }
 
-    private fun setStories(listStory: List<ListStoryItem>) {
-        val listStoryAdapter = ListStoryAdapter(listStory, applicationContext)
+    private fun setStories(data: PagingData<ListStoryItem>) {
+        val listStoryAdapter = ListStoryAdapter(applicationContext)
         binding.rvStories.adapter = listStoryAdapter
+        listStoryAdapter.submitData(lifecycle, data)
 
         listStoryAdapter.setOnItemClickCallback(object : ListStoryAdapter.OnItemClickCallback {
-            override fun onItemClicked(data: ListStoryItem, holder: ListStoryAdapter.ListViewHolder) {
+            override fun onItemClicked(data: ListStoryItem?, binding: ItemStoryBinding) {
                 val optionsCompat: ActivityOptionsCompat =
                     ActivityOptionsCompat.makeSceneTransitionAnimation(
                         this@MainActivity,
-                        Pair.create(holder.imgStory, "photo"),
-                        Pair.create(holder.tvUsername, "username"),
-                        Pair.create(holder.tvTime, "time"),
+                        Pair.create(binding.imgStory, "photo"),
+                        Pair.create(binding.tvUsername, "username"),
+                        Pair.create(binding.tvTime, "time"),
                     )
 
                 val moveToDetail = Intent(this@MainActivity, StoryDetailActivity::class.java)
@@ -125,7 +140,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
                 true
             }
             R.id.menu_refresh -> {
-                mainViewModel.getStories(mainViewModel.token)
+                getStoryData()
                 true
             }
             R.id.menu_maps -> {
