@@ -41,7 +41,7 @@ class LoginActivity : AppCompatActivity(), View.OnClickListener {
                 sharedViewModel.saveToken(it)
             }
             errorMessage.observe(this@LoginActivity) {
-                Toast.makeText(this@LoginActivity, getString(R.string.login_failed), Toast.LENGTH_SHORT).show()
+                Toast.makeText(this@LoginActivity, getString(R.string.login_failed, it), Toast.LENGTH_SHORT).show()
             }
         }
 
@@ -49,6 +49,7 @@ class LoginActivity : AppCompatActivity(), View.OnClickListener {
             getToken().observe(this@LoginActivity) {
                 if (it.isNotEmpty()) {
                     val intent = Intent(this@LoginActivity, MainActivity::class.java)
+                    intent.putExtra("token", it)
                     startActivity(intent)
                     finish()
                 }

@@ -20,7 +20,7 @@ class RegisterViewModel(private val authRepository: AuthRepository) : ViewModel(
 
         viewModelScope.launch {
             try {
-                _isSuccess.value = authRepository.register(name, email, password)
+                _isSuccess.value = !authRepository.register(name, email, password).error
             } catch (e: Exception) {
                 _errorMessage.value = e.message
             } finally {

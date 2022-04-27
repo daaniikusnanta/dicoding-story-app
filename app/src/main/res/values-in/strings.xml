@@ -5,15 +5,15 @@
     <string name="login">Masuk</string>
     <string name="logging_in">Sedang masuk…</string>
     <string name="login_success">Berhasil masuk</string>
-    <string name="login_failed">Gagal masuk, silakan coba lagi</string>
+    <string name="login_failed">Gagal masuk, silakan coba lagi.\nKode Error: %1$s</string>
     <string name="register">Daftar</string>
-    <string name="registering">Mendaftar</string>
+    <string name="registering">Mendaftar…</string>
     <string name="register_success">Berhasil mendaftar</string>
-    <string name="register_failed">Gagal mendaftar, silakan coba lagi</string>
+    <string name="register_failed">Gagal mendaftar, silakan coba lagi.\nKode Error: %1$s</string>
     <string name="upload">Unggah</string>
-    <string name="uploading">Mengunggah</string>
+    <string name="uploading">Mengunggah…</string>
     <string name="upload_success">Berhasil mengunggah</string>
-    <string name="upload_failed">Gagal menunggah, silakan coba lagi</string>
+    <string name="upload_failed">Gagal menunggah, silakan coba lagi.\nKode Error: %1$s</string>
     <string name="choose_a_picture">Pilih gambar</string>
     <string name="capture_picture_failed">Gagal mengambil gambar</string>
     <string name="camera_failed">Kamera gagal dibuka</string>
@@ -23,7 +23,7 @@
     <string name="yes">Ya</string>
     <string name="no">Tidak</string>
     <string name="confirm">Konfirmasi</string>
-    <string name="fetch_stories_failed">Gagal mengambil cerita</string>
+    <string name="fetch_stories_failed">Gagal mengambil cerita.\nKode Error: %1$s</string>
     <string name="tv_register_text">Tidak punya akun?</string>
     <string name="tv_login_text">Sudah punya akun?</string>
     <string name="welcome">Selamat datang !</string>
@@ -71,4 +71,7 @@
     <string name="btn_location_text">Tambah lokasi</string>
     <string name="remove">Hapus</string>
     <string name="maps">Maps</string>
+    <string name="refreshing">Memperbarui…</string>
+    <string name="location_not_found">Lokasi tidak ditemukan. Coba lagi.</string>
+    <string name="fetch_stories_success">Menampilkan %1$d cerita.</string>
 </resources>

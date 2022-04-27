@@ -36,7 +36,7 @@ class AddStoryActivity : AppCompatActivity() {
     private lateinit var fusedLocationClient: FusedLocationProviderClient
     private var location: Location? = null
     private val addStoryViewModel by viewModels<AddStoryViewModel> {
-        AddStoryViewModel.ViewModelFactory(this)
+        AddStoryViewModel.ViewModelFactory(this, token)
     }
     private val sharedViewModel by viewModels<SharedViewModel> {
         SharedViewModel.Factory (
@@ -106,7 +106,9 @@ class AddStoryActivity : AppCompatActivity() {
                 }
             }
             errorMessage.observe(this@AddStoryActivity) {
-                Toast.makeText(this@AddStoryActivity, getString(R.string.upload_failed), Toast.LENGTH_SHORT).show()
+                if (it != null) {
+                    Toast.makeText(this@AddStoryActivity, getString(R.string.upload_failed, it), Toast.LENGTH_SHORT).show()
+                }
             }
         }
 
@@ -211,7 +213,7 @@ class AddStoryActivity : AppCompatActivity() {
             } else {
                 Toast.makeText(
                     this@AddStoryActivity,
-                    "Location is not found. Try Again",
+                    getString(R.string.location_not_found),
                     Toast.LENGTH_SHORT
                 ).show()
             }

@@ -35,7 +35,7 @@ class RegisterActivity : AppCompatActivity(), View.OnClickListener {
                 }
             }
             errorMessage.observe(this@RegisterActivity) {
-                Toast.makeText(this@RegisterActivity, getString(R.string.register_failed), Toast.LENGTH_SHORT).show()
+                Toast.makeText(this@RegisterActivity, getString(R.string.register_failed, it!!), Toast.LENGTH_SHORT).show()
             }
         }
     }

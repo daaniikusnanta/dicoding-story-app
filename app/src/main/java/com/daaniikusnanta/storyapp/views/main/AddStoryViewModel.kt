@@ -2,7 +2,6 @@ package com.daaniikusnanta.storyapp.views.main
 
 import android.content.Context
 import android.location.Location
-import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
@@ -59,21 +58,20 @@ class AddStoryViewModel(private val storyRepository: StoryRepository) : ViewMode
 
         viewModelScope.launch {
             try {
-                _isSuccess.value = storyRepository.addStory(auth, photoMultiPart, HashMap(params))
+                _isSuccess.value = !storyRepository.addStory(auth, photoMultiPart, HashMap(params)).error
             } catch (e: Exception) {
                 _errorMessage.value = e.message
-                Log.e("AddStoryViewModel", e.message.toString())
             } finally {
                 _isLoading.value = false
             }
         }
     }
 
-    class ViewModelFactory(private val context: Context) : ViewModelProvider.Factory {
+    class ViewModelFactory(private val context: Context, private val auth: String) : ViewModelProvider.Factory {
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
             if (modelClass.isAssignableFrom(AddStoryViewModel::class.java)) {
                 @Suppress("UNCHECKED_CAST")
-                return AddStoryViewModel(Injection.provideStoryRepository(context)) as T
+                return AddStoryViewModel(Injection.provideStoryRepository(context, auth)) as T
             }
             throw IllegalArgumentException("Unknown ViewModel class")
         }

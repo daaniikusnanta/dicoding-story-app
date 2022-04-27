@@ -43,9 +43,10 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
     private lateinit var mMap: GoogleMap
     private lateinit var binding: ActivityMapsBinding
     private lateinit var fusedLocationClient: FusedLocationProviderClient
+    private var token = ""
     private var mapStyleResources: Int = R.raw.map_style_light
     private val mainViewModel by viewModels<MainViewModel> {
-        MainViewModel.ViewModelFactory(this)
+        MainViewModel.ViewModelFactory(this, token)
     }
     private val sharedViewModel by viewModels<SharedViewModel> {
         SharedViewModel.Factory(
@@ -104,13 +105,13 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
 
             listStories.observe(this@MapsActivity) {
                 if(it.isNotEmpty()) {
-                    Toast.makeText(this@MapsActivity, "Stories: ${it.size}", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this@MapsActivity, getString(R.string.fetch_stories_success, it.size), Toast.LENGTH_SHORT).show()
                     addStoryMarker(it)
                 }
             }
             errorMessage.observe(this@MapsActivity) {
                 if (it != null) {
-                    Snackbar.make(binding.root, getString(R.string.fetch_stories_failed), Snackbar.LENGTH_LONG)
+                    Snackbar.make(binding.root, getString(R.string.fetch_stories_failed, it), Snackbar.LENGTH_LONG)
                         .setAction(R.string.retry.toString()) { getStoryData() }
                         .show()
                 }
@@ -120,7 +121,6 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
 
     private fun getStoryData() {
         sharedViewModel.getToken().observe(this@MapsActivity) {
-            mainViewModel.token = it
             if (it.isEmpty()) {
                 finish()
             } else {
@@ -235,7 +235,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
                 } else {
                     Toast.makeText(
                         this@MapsActivity,
-                        "Location is not found. Try Again",
+                        getString(R.string.location_not_found),
                         Toast.LENGTH_SHORT
                     ).show()
                 }

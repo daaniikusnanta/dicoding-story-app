@@ -20,7 +20,7 @@ class LoginViewModel(private val authRepository: AuthRepository) : ViewModel() {
 
         viewModelScope.launch {
             try {
-                _token.value = authRepository.login(email, password)
+                _token.value = authRepository.login(email, password).loginResult?.token!!
             } catch (e: Exception) {
                 _errorMessage.value = e.message
             } finally {

@@ -5,11 +5,12 @@ import com.daaniikusnanta.storyapp.data.SettingPreferences
 import kotlinx.coroutines.launch
 
 class SharedViewModel(private val pref: SettingPreferences) : ViewModel() {
+
     init {
         getThemeSettings()
     }
 
-    fun getToken(): LiveData<String> {
+    fun getToken() : LiveData<String> {
         return pref.getTokenSetting().asLiveData()
     }
 

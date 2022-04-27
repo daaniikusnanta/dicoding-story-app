@@ -7,8 +7,8 @@ class AuthRepository (
 ) {
 
     suspend fun login(email: String, password: String) =
-        apiService.login(email, password).loginResult?.token
+        apiService.login(email, password)
 
     suspend fun register(name: String, email: String, password: String) =
-        !apiService.register(name, email, password).error
+        apiService.register(name, email, password)
 }

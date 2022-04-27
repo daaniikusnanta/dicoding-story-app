@@ -7,15 +7,15 @@
     <string name="login">Login</string>
     <string name="logging_in">Logging in…</string>
     <string name="login_success">Login success</string>
-    <string name="login_failed">Login failed, please try again</string>
+    <string name="login_failed">Login failed, please try again.\nError Code: %1$s</string>
     <string name="register">Register</string>
     <string name="registering">Registering…</string>
     <string name="register_success">Register success</string>
-    <string name="register_failed">Register failed, please try again</string>
+    <string name="register_failed">Register failed, please try again.\nError Code: %1$s</string>
     <string name="upload">Upload</string>
     <string name="uploading">Uploading…</string>
     <string name="upload_success">Upload success</string>
-    <string name="upload_failed">Upload failed, please try again</string>
+    <string name="upload_failed">Upload failed, please try again.\nError Code: %1$s</string>
 
     <string name="choose_a_picture">Choose a picture</string>
     <string name="capture_picture_failed">Capture picture failed</string>
@@ -29,7 +29,7 @@
     <string name="no">No</string>
     <string name="confirm">Confirm</string>
 
-    <string name="fetch_stories_failed">Fetch stories failed</string>
+    <string name="fetch_stories_failed">Fetch stories failed.\nError Code: %1$s</string>
 
     <string name="tv_register_text">Don\'t have an account?</string>
     <string name="tv_login_text">Already have an account?</string>
@@ -85,4 +85,7 @@
     <string name="btn_location_text">Add location</string>
     <string name="remove">Remove</string>
     <string name="maps">Maps</string>
+    <string name="refreshing">Refreshing…</string>
+    <string name="location_not_found">Location not found. Try again.</string>
+    <string name="fetch_stories_success">Showing %1$d stories.</string>
 </resources>
