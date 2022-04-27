@@ -1,7 +1,7 @@
 package com.daaniikusnanta.storyapp.views.main
 
 import android.Manifest
-import android.content.Context
+import android.annotation.SuppressLint
 import android.content.Intent
 import android.content.Intent.ACTION_GET_CONTENT
 import android.content.pm.PackageManager
@@ -11,29 +11,33 @@ import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
-import androidx.datastore.core.DataStore
-import androidx.datastore.preferences.core.Preferences
-import androidx.datastore.preferences.preferencesDataStore
 import com.daaniikusnanta.storyapp.data.SettingPreferences
 import com.daaniikusnanta.storyapp.databinding.ActivityAddStoryBinding
 import com.daaniikusnanta.storyapp.views.SharedViewModel
 import android.graphics.BitmapFactory
+import android.location.Geocoder
+import android.location.Location
 import android.net.Uri
 import android.view.MenuItem
+import android.view.View
 import androidx.activity.result.contract.ActivityResultContracts
 import com.daaniikusnanta.storyapp.R
 import com.daaniikusnanta.storyapp.misc.rotateBitmap
 import com.daaniikusnanta.storyapp.misc.uriToFile
-import com.daaniikusnanta.storyapp.views.auth.LoginActivity
 import com.daaniikusnanta.storyapp.views.dataStore
+import com.google.android.gms.location.FusedLocationProviderClient
+import com.google.android.gms.location.LocationServices
 import java.io.*
-
 
 class AddStoryActivity : AppCompatActivity() {
     private lateinit var binding: ActivityAddStoryBinding
     private var token = ""
     private var photoFile: File? = null
-    private val addStoryViewModel by viewModels<AddStoryViewModel>()
+    private lateinit var fusedLocationClient: FusedLocationProviderClient
+    private var location: Location? = null
+    private val addStoryViewModel by viewModels<AddStoryViewModel> {
+        AddStoryViewModel.ViewModelFactory(this)
+    }
     private val sharedViewModel by viewModels<SharedViewModel> {
         SharedViewModel.Factory (
             SettingPreferences.getInstance(dataStore)
@@ -65,10 +69,40 @@ class AddStoryActivity : AppCompatActivity() {
                 binding.btnUploadStory.text = if (it == true) getString(R.string.uploading) else getString(R.string.upload)
                 binding.btnAddFromGallery.isEnabled = it != true
                 binding.btnAddFromCamera.isEnabled = it != true
+                binding.btnLocation.isEnabled = it != true
             }
             isSuccess.observe(this@AddStoryActivity) {
                 if (it == true) {
                     finish()
+                }
+            }
+            location.observe(this@AddStoryActivity) { loc ->
+                this@AddStoryActivity.location = loc
+                if (loc == null) {
+                    binding.tvLocation.visibility = View.GONE
+                    binding.btnLocation.text = getString(R.string.btn_location_text)
+                    binding.btnLocation.setBackgroundColor(ContextCompat.getColor(this@AddStoryActivity, com.google.android.material.R.color.design_default_color_primary))
+                } else {
+                    binding.tvLocation.text =
+                        try {
+                            Geocoder.isPresent()
+                                .let {
+                                    if (it) {
+                                        Geocoder(this@AddStoryActivity).getFromLocation(
+                                            loc.latitude,
+                                            loc.longitude,
+                                            1
+                                        )[0].locality
+                                    } else {
+                                        "${loc.latitude}, ${loc.longitude}"
+                                    }
+                                }
+                        } catch (e: Exception) {
+                            "${loc.latitude}, ${loc.longitude}"
+                        }
+                    binding.tvLocation.visibility = View.VISIBLE
+                    binding.btnLocation.text = getString(R.string.remove)
+                    binding.btnLocation.setBackgroundColor(ContextCompat.getColor(this@AddStoryActivity, com.google.android.material.R.color.design_default_color_error))
                 }
             }
             errorMessage.observe(this@AddStoryActivity) {
@@ -76,10 +110,19 @@ class AddStoryActivity : AppCompatActivity() {
             }
         }
 
+        fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
+
         binding.apply {
             btnAddFromCamera.setOnClickListener { startCameraX() }
             btnAddFromGallery.setOnClickListener { startGallery() }
             btnUploadStory.setOnClickListener { uploadStory() }
+            btnLocation.setOnClickListener {
+                if (location != null) {
+                    addStoryViewModel.setLocation(null)
+                } else {
+                    getMyLastLocation()
+                }
+            }
         }
     }
 
@@ -89,7 +132,6 @@ class AddStoryActivity : AppCompatActivity() {
         if (it.resultCode == CAMERA_X_RESULT) {
             val resultFile = it.data?.getSerializableExtra("picture") as File
             val isBackCamera = it.data?.getBooleanExtra("isBackCamera", true) as Boolean
-
 
             val result = rotateBitmap(
                 BitmapFactory.decodeFile(resultFile.path),
@@ -132,6 +174,7 @@ class AddStoryActivity : AppCompatActivity() {
                 addStoryViewModel.uploadStory(
                     photoFile!!,
                     edtDescriptionInput.text.toString(),
+                    location,
                     token,
                 )
             }
@@ -158,6 +201,21 @@ class AddStoryActivity : AppCompatActivity() {
 
     private fun allPermissionsGranted() = REQUIRED_PERMISSIONS.all {
         ContextCompat.checkSelfPermission(baseContext, it) == PackageManager.PERMISSION_GRANTED
+    }
+
+    @SuppressLint("MissingPermission")
+    private fun getMyLastLocation() {
+        fusedLocationClient.lastLocation.addOnSuccessListener { location: Location? ->
+            if (location != null) {
+                addStoryViewModel.setLocation(location)
+            } else {
+                Toast.makeText(
+                    this@AddStoryActivity,
+                    "Location is not found. Try Again",
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
+        }
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {

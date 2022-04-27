@@ -45,16 +45,43 @@
             app:layout_constraintStart_toEndOf="@id/btn_add_from_camera"
             app:layout_constraintTop_toTopOf="@+id/btn_add_from_camera" />
 
+        <TextView
+            android:id="@+id/tv_location"
+            style="@style/TextAppearance.AppCompat"
+            android:layout_width="256dp"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="16dp"
+            android:minWidth="32dp"
+            android:text="@string/placeholder_location"
+            android:textSize="18sp"
+            android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="@+id/btn_location"
+            app:layout_constraintEnd_toStartOf="@+id/btn_location"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/btn_location" />
+
+        <Button
+            android:id="@+id/btn_location"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            app:layout_constraintBottom_toTopOf="@+id/edt_description_input"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/tv_location"
+            app:layout_constraintTop_toBottomOf="@+id/btn_add_from_camera"
+            android:text="@string/btn_location_text"/>
+
         <EditText
             android:id="@+id/edt_description_input"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
-            android:minHeight="48dp"
+            android:minHeight="96dp"
+            android:gravity="top"
             android:hint="@string/edt_description_input_hint"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/btn_add_from_camera"
+            app:layout_constraintTop_toBottomOf="@+id/btn_location"
             android:importantForAutofill="no"
             android:inputType="text" />
 

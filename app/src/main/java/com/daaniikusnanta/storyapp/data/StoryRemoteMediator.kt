@@ -65,6 +65,7 @@ class StoryRemoteMediator(
                 database.remoteKeysDao().insertAll(keys)
                 database.storyDao().insertStory(responseData)
             }
+
             return MediatorResult.Success(endOfPaginationReached)
         } catch (e: Exception) {
             return MediatorResult.Error(e)

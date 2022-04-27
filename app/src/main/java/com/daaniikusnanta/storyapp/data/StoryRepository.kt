@@ -4,6 +4,8 @@ import androidx.lifecycle.LiveData
 import androidx.paging.*
 import com.daaniikusnanta.storyapp.api.ApiService
 import com.daaniikusnanta.storyapp.api.ListStoryItem
+import okhttp3.MultipartBody
+import okhttp3.RequestBody
 
 @OptIn(ExperimentalPagingApi::class)
 class StoryRepository(
@@ -22,4 +24,14 @@ class StoryRepository(
             }
         ).liveData
     }
+
+    suspend fun getStoriesWithLocation(auth: String) =
+        apiService.getStories(auth, 1).listStory
+
+    suspend fun addStory(
+        auth: String,
+        multipart: MultipartBody.Part,
+        params: HashMap<String, RequestBody>
+    ) =
+        !apiService.addStory(multipart, params, auth).error
 }

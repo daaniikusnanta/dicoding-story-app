@@ -1,13 +1,12 @@
 package com.daaniikusnanta.storyapp.views.main
 
 import android.content.Intent
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.provider.Settings
 import android.view.MenuItem
 import android.view.View
-import android.widget.Toast
 import androidx.activity.viewModels
+import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import com.daaniikusnanta.storyapp.data.SettingPreferences
 import com.daaniikusnanta.storyapp.databinding.ActivitySettingsBinding

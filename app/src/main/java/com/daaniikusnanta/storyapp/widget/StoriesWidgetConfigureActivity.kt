@@ -17,7 +17,9 @@ import com.daaniikusnanta.storyapp.views.dataStore
 
 class StoriesWidgetConfigureActivity : AppCompatActivity(), View.OnClickListener {
     private lateinit var binding: ActivityStoriesWidgetConfigureBinding
-    private val loginViewModel by viewModels<LoginViewModel>()
+    private val loginViewModel by viewModels<LoginViewModel> {
+        LoginViewModel.ViewModelFactory()
+    }
     private val sharedViewModel by viewModels<SharedViewModel> {
         SharedViewModel.Factory(
             SettingPreferences.getInstance(dataStore)

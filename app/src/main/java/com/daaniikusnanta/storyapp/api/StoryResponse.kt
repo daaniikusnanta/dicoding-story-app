@@ -2,7 +2,6 @@ package com.daaniikusnanta.storyapp.api
 
 import com.google.gson.annotations.SerializedName
 import android.os.Parcelable
-import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import kotlinx.android.parcel.Parcelize
@@ -13,7 +12,7 @@ data class StoryResponse(
 	val listStory: List<ListStoryItem>,
 
 	@field:SerializedName("error")
-	val error: Boolean? = null,
+	val error: Boolean,
 
 	@field:SerializedName("message")
 	val message: String? = null
@@ -48,7 +47,7 @@ data class ListStoryItem(
 
 data class ApiResponse(
 	@field:SerializedName("error")
-	val error: Boolean? = null,
+	val error: Boolean,
 
 	@field:SerializedName("message")
 	val message: String? = null
@@ -60,7 +59,7 @@ data class LoginResponse(
 	val loginResult: LoginResult? = null,
 
 	@field:SerializedName("error")
-	val error: Boolean? = null,
+	val error: Boolean,
 
 	@field:SerializedName("message")
 	val message: String? = null
@@ -69,7 +68,7 @@ data class LoginResponse(
 data class LoginResult(
 
 	@field:SerializedName("name")
-	val name: String? = null,
+	val name: String,
 
 	@field:SerializedName("userId")
 	val userId: String? = null,

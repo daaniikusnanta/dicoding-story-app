@@ -1,15 +1,12 @@
 package com.daaniikusnanta.storyapp.data
 
-import android.content.Context
 import androidx.datastore.core.DataStore
-import androidx.datastore.dataStore
 import androidx.datastore.preferences.core.*
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 
 class SettingPreferences private constructor(private val dataStore: DataStore<Preferences>){
     private val KEY_THEME = booleanPreferencesKey("theme")
-    private val KEY_USER = stringPreferencesKey("user")
     private val KEY_TOKEN = stringPreferencesKey("token")
 
     fun getThemeSetting(): Flow<Boolean> {
@@ -21,18 +18,6 @@ class SettingPreferences private constructor(private val dataStore: DataStore<Pr
     suspend fun saveThemeSetting(isDarkModeActive: Boolean) {
         dataStore.edit { preferences ->
             preferences[KEY_THEME] = isDarkModeActive
-        }
-    }
-
-    fun getUserSetting(): Flow<String> {
-        return dataStore.data.map { preferences ->
-            preferences[KEY_USER] ?: ""
-        }
-    }
-
-    suspend fun saveUserSetting(user: String?) {
-        dataStore.edit { preferences ->
-            preferences[KEY_USER] = user ?: ""
         }
     }
 

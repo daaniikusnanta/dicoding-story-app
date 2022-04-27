@@ -14,27 +14,25 @@ import com.daaniikusnanta.storyapp.views.dataStore
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 
 internal class StackRemoteViewsFactory(private val context: Context) : RemoteViewsService.RemoteViewsFactory {
     var stories = ArrayList<ListStoryItem>()
 
-    override fun onDataSetChanged() {
-        var token = ""
-
+    override fun onDataSetChanged(): Unit = runBlocking {
         val pref = SettingPreferences.getInstance(context.dataStore)
-        CoroutineScope(Dispatchers.Main).launch {
-            pref.getTokenSetting().collect { token = "Bearer $it" }
+        val token = pref.getTokenSetting().first()
+        val auth = "Bearer $token"
 
-            val listStory = ApiConfig.getApiService()
-                .getStories(token)
-                .listStory
-
-            stories.clear()
-            stories.addAll(listStory)
+        try {
+            stories.addAll(
+                ApiConfig.getApiService().getStories(auth, 0).listStory
+            )
+        } catch (e: Exception) {
+            e.printStackTrace()
         }
-
-
     }
 
     override fun onCreate() {

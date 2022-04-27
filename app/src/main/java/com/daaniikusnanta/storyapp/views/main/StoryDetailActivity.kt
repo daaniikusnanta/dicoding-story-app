@@ -1,5 +1,6 @@
 package com.daaniikusnanta.storyapp.views.main
 
+import android.location.Geocoder
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.MenuItem
@@ -28,7 +29,26 @@ class StoryDetailActivity : AppCompatActivity() {
                 .into(binding.imgPhoto)
             binding.tvUsername.text = name
             binding.tvDescription.text = description
-            binding.tvTime.text = createdAt?.let { getElapsedTimeString(it, this@StoryDetailActivity) }
+            binding.tvTime.text = getElapsedTimeString(createdAt, this@StoryDetailActivity)
+            binding.tvLocation.text = lat?.let {
+                try {
+                    Geocoder.isPresent()
+                        .let {
+                            if (it) {
+                                Geocoder(binding.root.context).getFromLocation(
+                                    lat.toDouble(),
+                                    lon!!.toDouble(),
+                                    1
+                                )[0].locality
+                            } else {
+                                "$lat, $lon"
+                            }
+                        }
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                    "$lat, $lon"
+                }
+            }
         }
     }
 

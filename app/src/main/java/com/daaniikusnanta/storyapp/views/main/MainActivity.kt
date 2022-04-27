@@ -7,7 +7,6 @@ import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
-import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.app.ActivityOptionsCompat
@@ -25,7 +24,6 @@ import com.daaniikusnanta.storyapp.views.SharedViewModel
 import com.daaniikusnanta.storyapp.views.auth.LoginActivity
 import com.daaniikusnanta.storyapp.views.dataStore
 import com.google.android.material.snackbar.Snackbar
-
 
 class MainActivity : AppCompatActivity(), View.OnClickListener {
     private lateinit var binding: ActivityMainBinding
@@ -86,13 +84,15 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
     private fun getStoryData() {
         sharedViewModel.getToken().observe(this) { token ->
             mainViewModel.token = token
+
             if (token.isEmpty()) {
                 val moveToLogin = Intent(this, LoginActivity::class.java)
                 startActivity(moveToLogin)
                 finish()
+
             } else {
                 this.token = token
-                mainViewModel.getStories(token).observe(this) {
+                mainViewModel.getStories(token, true).observe(this) {
                     if (it == null) {
                         Snackbar.make(binding.coordinatorLayout, getString(R.string.fetch_stories_failed), Snackbar.LENGTH_LONG)
                             .setAction(R.string.retry.toString()) { onResume() }
@@ -106,7 +106,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
     }
 
     private fun setStories(data: PagingData<ListStoryItem>) {
-        val listStoryAdapter = ListStoryAdapter(applicationContext)
+        val listStoryAdapter = ListStoryAdapter()
         binding.rvStories.adapter = listStoryAdapter
         listStoryAdapter.submitData(lifecycle, data)
 

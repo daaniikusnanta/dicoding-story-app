@@ -2,32 +2,31 @@ package com.daaniikusnanta.storyapp.api
 
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
-import retrofit2.Call
 import retrofit2.http.*
 
 interface ApiService {
     @FormUrlEncoded
     @POST("register")
-    fun register(
+    suspend fun register(
         @Field ("name") name: String,
         @Field ("email") email: String,
         @Field ("password") password: String,
-    ): Call<ApiResponse>
+    ): ApiResponse
 
     @FormUrlEncoded
     @POST("login")
-    fun login(
+    suspend fun login(
         @Field ("email") email: String,
         @Field ("password") password: String,
-    ): Call<LoginResponse>
+    ): LoginResponse
 
     @Multipart
     @POST("stories")
-    fun addStory(
+    suspend fun addStory(
         @Part file: MultipartBody.Part,
-        @Part("description") description: RequestBody,
+        @PartMap params: HashMap<String, RequestBody>,
         @Header("Authorization") token: String,
-    ): Call<ApiResponse>
+    ): ApiResponse
 
     @GET("stories")
     suspend fun getStories(

@@ -1,16 +1,11 @@
 package com.daaniikusnanta.storyapp.views.auth
 
-import android.util.Log
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
-import com.daaniikusnanta.storyapp.api.ApiConfig
-import com.daaniikusnanta.storyapp.api.ApiResponse
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
+import androidx.lifecycle.*
+import com.daaniikusnanta.storyapp.data.AuthRepository
+import com.daaniikusnanta.storyapp.data.Injection
+import kotlinx.coroutines.launch
 
-class RegisterViewModel : ViewModel() {
+class RegisterViewModel(private val authRepository: AuthRepository) : ViewModel() {
     private val _isLoading = MutableLiveData<Boolean>()
     val isLoading: LiveData<Boolean> = _isLoading
 
@@ -22,30 +17,25 @@ class RegisterViewModel : ViewModel() {
 
     fun register(name: String, email: String, password: String) {
         _isLoading.value = true
-        val client = ApiConfig.getApiService().register(
-            name, email, password)
-        client.enqueue(object : Callback<ApiResponse> {
-            override fun onResponse(
-                call: Call<ApiResponse>,
-                response: Response<ApiResponse>
-            ) {
-                _isLoading.value = true
-                if (response.isSuccessful) {
-                    _isSuccess.value = true
-                    Log.i(TAG, "onResponse onSuccess: ${response.message()}")
-                } else {
-                    _errorMessage.value = response.body()?.message
-                    Log.e(TAG, "onResponse onFailure: ${response.message()}")
-                }
-            }
-            override fun onFailure(call: Call<ApiResponse>, t: Throwable) {
+
+        viewModelScope.launch {
+            try {
+                _isSuccess.value = authRepository.register(name, email, password)
+            } catch (e: Exception) {
+                _errorMessage.value = e.message
+            } finally {
                 _isLoading.value = false
-                Log.e(TAG, "onFailure: ${t.message}")
             }
-        })
+        }
     }
 
-    companion object {
-        private val TAG = RegisterViewModel::class.java.simpleName
+    class ViewModelFactory : ViewModelProvider.Factory {
+        override fun <T : ViewModel> create(modelClass: Class<T>): T {
+            if (modelClass.isAssignableFrom(RegisterViewModel::class.java)) {
+                @Suppress("UNCHECKED_CAST")
+                return RegisterViewModel(Injection.provideAuthRepository()) as T
+            }
+            throw IllegalArgumentException("Unknown ViewModel class")
+        }
     }
 }

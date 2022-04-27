@@ -15,7 +15,9 @@ import com.daaniikusnanta.storyapp.views.main.MainActivity
 
 class LoginActivity : AppCompatActivity(), View.OnClickListener {
     private lateinit var binding: ActivityLoginBinding
-    private val loginViewModel by viewModels<LoginViewModel>()
+    private val loginViewModel by viewModels<LoginViewModel> {
+        LoginViewModel.ViewModelFactory()
+    }
     private val sharedViewModel by viewModels<SharedViewModel> {
         SharedViewModel.Factory(
             SettingPreferences.getInstance(dataStore)

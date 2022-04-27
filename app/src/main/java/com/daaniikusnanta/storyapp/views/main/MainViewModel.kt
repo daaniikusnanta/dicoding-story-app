@@ -1,19 +1,14 @@
 package com.daaniikusnanta.storyapp.views.main
 
 import android.content.Context
-import android.util.Log
 import androidx.lifecycle.*
 import androidx.paging.PagingData
 import androidx.paging.cachedIn
-import com.daaniikusnanta.storyapp.api.ApiConfig
 import com.daaniikusnanta.storyapp.api.ListStoryItem
-import com.daaniikusnanta.storyapp.api.StoryResponse
 import com.daaniikusnanta.storyapp.data.Injection
 import com.daaniikusnanta.storyapp.data.StoryRepository
 import kotlinx.coroutines.launch
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
+import retrofit2.HttpException
 
 class MainViewModel(private val storyRepository: StoryRepository) : ViewModel() {
     private val _listStories = MutableLiveData<List<ListStoryItem>>()
@@ -32,8 +27,14 @@ class MainViewModel(private val storyRepository: StoryRepository) : ViewModel() 
         val auth = "Bearer $authToken"
 
         viewModelScope.launch {
-            _listStories.value = ApiConfig.getApiService().getStories(auth, 1).listStory
-            _isLoading.value = false
+            try {
+                val response = storyRepository.getStoriesWithLocation(auth)
+                _listStories.value = response
+            } catch (e: HttpException) {
+                _errorMessage.value = e.message
+            } finally {
+                _isLoading.value = false
+            }
         }
     }
 
@@ -51,13 +52,12 @@ class MainViewModel(private val storyRepository: StoryRepository) : ViewModel() 
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
             if (modelClass.isAssignableFrom(MainViewModel::class.java)) {
                 @Suppress("UNCHECKED_CAST")
-                return MainViewModel(Injection.provideRepository(context)) as T
+                return MainViewModel(Injection.provideStoryRepository(context)) as T
             }
             throw IllegalArgumentException("Unknown ViewModel class")
         }
     }
 
     companion object {
-        private val TAG = MainViewModel::class.java.simpleName
     }
 }

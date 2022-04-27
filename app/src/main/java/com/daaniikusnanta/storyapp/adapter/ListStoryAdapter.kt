@@ -1,21 +1,17 @@
 package com.daaniikusnanta.storyapp.adapter
 
-import android.content.Context
+import android.location.Geocoder
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageView
-import android.widget.TextView
 import androidx.paging.PagingDataAdapter
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
-import com.daaniikusnanta.storyapp.R
 import com.daaniikusnanta.storyapp.api.ListStoryItem
 import com.daaniikusnanta.storyapp.databinding.ItemStoryBinding
 import com.daaniikusnanta.storyapp.misc.getElapsedTimeString
 
-class ListStoryAdapter(private val context: Context) : PagingDataAdapter<ListStoryItem, ListStoryAdapter.ListViewHolder>(DIFF_CALLBACK) {
+class ListStoryAdapter : PagingDataAdapter<ListStoryItem, ListStoryAdapter.ListViewHolder>(DIFF_CALLBACK) {
 
     private lateinit var onItemClickCallback: OnItemClickCallback
 
@@ -33,8 +29,6 @@ class ListStoryAdapter(private val context: Context) : PagingDataAdapter<ListSto
         if (story != null) {
             holder.bind(story, onItemClickCallback)
         }
-
-
     }
 
     class ListViewHolder(private val binding: ItemStoryBinding) : RecyclerView.ViewHolder(binding.root) {
@@ -45,6 +39,25 @@ class ListStoryAdapter(private val context: Context) : PagingDataAdapter<ListSto
                     .into(binding.imgStory)
                 binding.tvUsername.text = name
                 binding.tvTime.text = getElapsedTimeString(createdAt, binding.root.context)
+                binding.tvLocation.text = lat?.let {
+                    try {
+                        Geocoder.isPresent()
+                            .let {
+                                if (it) {
+                                    Geocoder(binding.root.context).getFromLocation(
+                                        lat.toDouble(),
+                                        lon!!.toDouble(),
+                                        1
+                                    )[0].locality
+                                } else {
+                                    "$lat, $lon"
+                                }
+                            }
+                    } catch (e: Exception) {
+                        e.printStackTrace()
+                        "$lat, $lon"
+                    }
+                }
 
                 binding.storyCard.setOnClickListener { onItemClickCallback.onItemClicked(story, binding) }
             }
@@ -65,7 +78,5 @@ class ListStoryAdapter(private val context: Context) : PagingDataAdapter<ListSto
                 return oldItem.id == newItem.id
             }
         }
-
-
     }
 }

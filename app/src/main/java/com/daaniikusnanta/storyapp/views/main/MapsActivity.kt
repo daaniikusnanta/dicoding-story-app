@@ -1,6 +1,7 @@
 package com.daaniikusnanta.storyapp.views.main
 
 import android.Manifest
+import android.annotation.SuppressLint
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.content.res.Resources
@@ -10,7 +11,9 @@ import android.location.Location
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
+import android.view.Menu
 import android.view.MenuItem
+import android.view.View
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
@@ -25,7 +28,6 @@ import com.daaniikusnanta.storyapp.data.SettingPreferences
 import com.daaniikusnanta.storyapp.databinding.ActivityMapsBinding
 import com.daaniikusnanta.storyapp.misc.getElapsedTimeString
 import com.daaniikusnanta.storyapp.views.SharedViewModel
-import com.daaniikusnanta.storyapp.views.auth.LoginActivity
 import com.daaniikusnanta.storyapp.views.dataStore
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
@@ -63,15 +65,9 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
 
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
+        getStoryData()
+
         sharedViewModel.apply {
-            getToken().observe(this@MapsActivity) {
-                mainViewModel.token = it
-                if (it.isEmpty()) {
-                    finish()
-                } else {
-                    mainViewModel.getStoriesWithLocation(it)
-                }
-            }
             getThemeSettings().observe(this@MapsActivity) {
                 mapStyleResources =
                     if (!it) R.raw.map_style_light
@@ -102,10 +98,9 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
         setMapStyle()
 
         mainViewModel.apply {
-//            isLoading.observe(this@MainActivity) {
-//                binding.progressBar.visibility = if (it) View.VISIBLE else View.GONE
-//                binding.rvStories.visibility = if (it) View.GONE else View.VISIBLE
-//            }
+            isLoading.observe(this@MapsActivity) {
+                binding.progressBar.visibility = if (it) View.VISIBLE else View.GONE
+            }
 
             listStories.observe(this@MapsActivity) {
                 if(it.isNotEmpty()) {
@@ -114,12 +109,22 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
                 }
             }
             errorMessage.observe(this@MapsActivity) {
-//                if (it != null) {
-//                    Snackbar.make(binding.root, getString(R.string.fetch_stories_failed), Snackbar.LENGTH_LONG)
-//                        .setAction(R.string.retry.toString()) { onResume() }
-//                        .show()
-//                }
-                TODO("not implemented")
+                if (it != null) {
+                    Snackbar.make(binding.root, getString(R.string.fetch_stories_failed), Snackbar.LENGTH_LONG)
+                        .setAction(R.string.retry.toString()) { getStoryData() }
+                        .show()
+                }
+            }
+        }
+    }
+
+    private fun getStoryData() {
+        sharedViewModel.getToken().observe(this@MapsActivity) {
+            mainViewModel.token = it
+            if (it.isEmpty()) {
+                finish()
+            } else {
+                mainViewModel.getStoriesWithLocation(it)
             }
         }
     }
@@ -136,10 +141,24 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
         }
     }
 
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        menuInflater.inflate(R.menu.maps_top_app_bar, menu)
+        return super.onCreateOptionsMenu(menu)
+    }
+
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
             android.R.id.home -> {
                 finish()
+                true
+            }
+            R.id.menu_settings -> {
+                val moveToSetting = Intent(this, SettingsActivity::class.java)
+                startActivity(moveToSetting)
+                true
+            }
+            R.id.menu_refresh -> {
+                getStoryData()
                 true
             }
             else -> super.onOptionsItemSelected(item)
@@ -205,6 +224,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
         ) == PackageManager.PERMISSION_GRANTED
     }
 
+    @SuppressLint("MissingPermission")
     private fun getMyLastLocation() {
         if (checkPermission(Manifest.permission.ACCESS_FINE_LOCATION) &&
             checkPermission(Manifest.permission.ACCESS_COARSE_LOCATION)

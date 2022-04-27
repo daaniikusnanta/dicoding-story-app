@@ -80,5 +80,9 @@
     <string name="title_activity_maps" translatable="false">MapsActivity</string>
     <string name="map_id_light" translatable="false">7cad28883dc70418</string>
     <string name="map_id_dark" translatable="false">dfd9ada7429ce95b</string>
-    <string name="info_window_click_message">Tap to view more...</string>
+    <string name="info_window_click_message">Tap to view more…</string>
+    <string name="placeholder_location" translatable="false">Surabaya, Indonesia</string>
+    <string name="btn_location_text">Add location</string>
+    <string name="remove">Remove</string>
+    <string name="maps">Maps</string>
 </resources>

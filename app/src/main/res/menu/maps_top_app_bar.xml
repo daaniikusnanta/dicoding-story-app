@@ -3,12 +3,6 @@
     xmlns:android="http://schemas.android.com/apk/res/android">
 
     <item
-        android:id="@+id/menu_maps"
-        android:icon="@drawable/ic_baseline_map_24"
-        android:title="@string/maps"
-        app:showAsAction="ifRoom" />
-
-    <item
         android:id="@+id/menu_refresh"
         android:icon="@drawable/ic_baseline_refresh_24"
         android:title="@string/refresh"
